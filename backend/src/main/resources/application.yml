@@ -1,0 +1,9 @@
+server:
+    port: 8888
+
+spring:
+    application:
+        name: ods-demo
+
+project:
+    version: V1.0
