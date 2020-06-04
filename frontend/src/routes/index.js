@@ -4,6 +4,7 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 const Live = () => import(/* webpackChunkName: "index" */ '../components/common/Live.vue')
+const Map = () => import(/* webpackChunkName: "index" */ '../components/common/Map.vue')
 
 const routes = [
     {
@@ -24,6 +25,11 @@ const routes = [
         path: '/live',
         name: "live",
         component: Live
+    },
+    {
+        path: '/map',
+        name: "map",
+        component: Map
     }
 ]
 
