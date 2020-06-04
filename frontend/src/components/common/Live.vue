@@ -1,7 +1,19 @@
 <template>
-  <div>
-    <videoPlayer class="vjs-custom-skin videoPlayer myplayer" :options="playerOptions"></videoPlayer>
-  </div>
+    <!-- <el-container> -->
+        <!-- <el-header>
+            <el-breadcrumb separator-class="el-icon-arrow-right">
+                <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
+                <el-breadcrumb-item>promotion management</el-breadcrumb-item>
+                <el-breadcrumb-item>promotion list</el-breadcrumb-item>
+                <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
+            </el-breadcrumb>
+        </el-header> -->
+        <!-- <el-main> -->
+            <div>
+                <videoPlayer class="vjs-custom-skin videoPlayer player" :options="playerOptions"></videoPlayer>
+            </div>
+        <!-- </el-main> -->
+    <!-- </el-container> -->
 </template>
 <script>
 import 'video.js/dist/video-js.css'
@@ -15,7 +27,7 @@ export default {
     data () {
         return {
             playerOptions: {
-                height: '700',
+                height: '600',
                 language: 'en-US',
                 sources: [{
                     type: 'rtmp/mp4',
@@ -37,8 +49,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.myplayer {
+.player {
     margin-left: auto;
     margin-right: auto;
 }
+
+.el-breadcrumb{
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ebeef5;
+        }
 </style>

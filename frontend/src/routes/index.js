@@ -3,8 +3,8 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-const Live = () => import(/* webpackChunkName: "index" */ '../components/common/Live.vue')
 const Map = () => import(/* webpackChunkName: "index" */ '../components/common/Map.vue')
+const Stats = () => import(/* webpackChunkName: "index" */ '../components/common/Stats.vue')
 
 const routes = [
     {
@@ -12,24 +12,24 @@ const routes = [
         name: 'index',
         // component: Live
         redirect: {
-            name: 'live'
+            name: 'map'
         }
     },
     {
         path: '/',
         redirect: {
-            name: 'live'
+            name: 'map'
         }
-    },
-    {
-        path: '/live',
-        name: "live",
-        component: Live
     },
     {
         path: '/map',
         name: "map",
         component: Map
+    },
+    {
+        path: '/stats',
+        name: "stats",
+        component: Stats
     }
 ]
 

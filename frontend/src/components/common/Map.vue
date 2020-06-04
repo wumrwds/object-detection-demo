@@ -1,91 +1,67 @@
 <template>
-    <el-container>
-        <el-header>
+<div class="list">
+    <el-scrollbar class="page-component__scroll">
+         <el-main>
             <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
-                <el-breadcrumb-item>promotion management</el-breadcrumb-item>
-                <el-breadcrumb-item>promotion list</el-breadcrumb-item>
-                <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
+                <el-breadcrumb-item :to="{ path: '/' }">Homepage</el-breadcrumb-item>
+                <el-breadcrumb-item>Map</el-breadcrumb-item>
             </el-breadcrumb>
-        </el-header>
-        <el-main>
-            <div>
-                <gmap-map :center="center" :zoom="12" style="width: 100%; height: 650px">
-                    <gmap-marker :key="index" v-for="(m, index) in markers"
-                        :position="m.position" :clickable="true"
-                        :draggable="false" @click="center=m.position;playVideo()"
-                        :icon="m.markerOptions">
-                    </gmap-marker>
-                </gmap-map>
-            </div>
+            <gmap-map :center="center" :zoom="10" style="width: 100%; height: 750px">
+                <gmap-marker :key="index" v-for="(m, index) in markers"
+                    :position="m.position" :clickable="true"
+                    :draggable="false" @click="center=m.position;openDialog()"
+                    :icon="m.markerOptions">
+                </gmap-marker>
+            </gmap-map>
+
+            <el-dialog title :visible.sync="dialogVisible" width="65%" @close="closeDialog"
+                    :before-close="handleClose">
+                <live></live>
+            </el-dialog>
         </el-main>
-    </el-container>
+    </el-scrollbar>
+</div>
 </template>
 <script>
+import Live from './Live.vue'
+
 export default {
     data () {
+        let size = {
+            width: 60,
+            height: 90,
+            f: 'px',
+            b: 'px'
+        }
+        let scaledSize = {
+            width: 30,
+            height: 45,
+            f: 'px',
+            b: 'px'
+        }
+
         let red = {
             url: './images/red.png',
-            size: {
-                width: 60,
-                height: 90,
-                f: 'px',
-                b: 'px'
-            },
-            scaledSize: {
-                width: 30,
-                height: 45,
-                f: 'px',
-                b: 'px'
-            }
+            size: size,
+            scaledSize: scaledSize
         }
 
         let blue = {
             url: './images/blue.png',
-            size: {
-                width: 60,
-                height: 90,
-                f: 'px',
-                b: 'px'
-            },
-            scaledSize: {
-                width: 30,
-                height: 45,
-                f: 'px',
-                b: 'px'
-            }
+            size: size,
+            scaledSize: scaledSize
         }
 
         let green = {
             url: './images/green.png',
-            size: {
-                width: 60,
-                height: 90,
-                f: 'px',
-                b: 'px'
-            },
-            scaledSize: {
-                width: 30,
-                height: 45,
-                f: 'px',
-                b: 'px'
-            }
+            size: size,
+            scaledSize: scaledSize
         }
 
         let grey = {
             url: './images/grey.png',
-            size: {
-                width: 60,
-                height: 90,
-                f: 'px',
-                b: 'px'
-            },
-            scaledSize: {
-                width: 30,
-                height: 45,
-                f: 'px',
-                b: 'px'
-            }
+            size: size,
+            scaledSize: scaledSize
         }
 
         return {
@@ -136,15 +112,23 @@ export default {
                     },
                     markerOptions: red
                 }
-            ]
+            ],
+            dialogVisible: false
         }
     },
 
     methods: {
+        openDialog () {
+            this.dialogVisible = true
+        },
 
+        closeDialog () {
+            // this.videoUrl = ""
+        }
     },
 
     components: {
+        Live
     }
 }
 </script>
@@ -154,8 +138,75 @@ export default {
     margin-right: auto;
 }
 
-.el-breadcrumb {
-    padding-bottom: 20px;
-    border-bottom: 1px solid #ebeef5;
+.list{
+    height: 100%;
+    color: #48576a;
+    .header-box {
+		background-image: linear-gradient(-180deg, rgba(37,30,71,.9) 0%, rgba(36,83,155,.9) 100%);
+		@media (max-width: 1249px) {
+            width: 1080px !important;
+            margin: 0 auto;
+        }
+    }
+    .page-component__scroll{
+        height: 100%;
+        .el-breadcrumb{
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ebeef5;
+        }
+    }
+    .el-main{
+        .el-breadcrumb{
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ebeef5;
+        }
+        .title-section{
+            background: #f0f2f5;
+            padding: 10px;
+            margin: 20px 0;
+            position: relative;
+            color: #606266;
+            .item-group{
+                display: inline-block;
+                margin-right: 16px;
+                label{
+                    padding-right: 6px;
+                }
+            }
+            .el-radio-button__inner{
+                padding: 10px
+            }
+            .el-input{
+                width: 230px;
+            }
+        }
+        .query-button{
+            position: absolute;
+            right:90px;
+        }
+        .add-button{
+            position: absolute;
+            right: 10px;
+        }
+        .el-button{
+            a{
+                text-decoration: none;
+                color: #fff;
+            }
+            &:hover{
+
+            }
+        }
+        .el-table{
+            color: #606266;
+            thead{
+                 color: #606266;
+            }
+        }
+        .el-pagination{
+            margin-top:30px;
+            text-align: right;
+        }
+    }
 }
 </style>

@@ -1,12 +1,12 @@
 [
     {
-        "title": "Real-time Live",
-        "iconClass": "xxx",
-        "href": "/live"
-    },
-    {
         "title": "Map",
         "iconClass": "xxx",
         "href": "/map"
+    },
+    {
+        "title": "Stats",
+        "iconClass": "xxx",
+        "href": "/stats"
     }
 ]
