@@ -1,19 +1,20 @@
 <template>
-    <!-- <el-container> -->
-        <!-- <el-header>
-            <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
-                <el-breadcrumb-item>promotion management</el-breadcrumb-item>
-                <el-breadcrumb-item>promotion list</el-breadcrumb-item>
-                <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
+<div class="list">
+    <el-scrollbar class="page-component__scroll">
+         <el-main>
+             <el-breadcrumb separator-class="el-icon-arrow-right">
+                <el-breadcrumb-item :to="{ path: '/' }">Homepage</el-breadcrumb-item>
+                <el-breadcrumb-item>Live</el-breadcrumb-item>
             </el-breadcrumb>
-        </el-header> -->
-        <!-- <el-main> -->
             <div>
-                <videoPlayer class="vjs-custom-skin videoPlayer player" :options="playerOptions"></videoPlayer>
+                <videoPlayer class="vjs-custom-skin videoPlayer player"
+                    ref="videoPlayer"
+                    :options="playerOptions">
+                </videoPlayer>
             </div>
-        <!-- </el-main> -->
-    <!-- </el-container> -->
+        </el-main>
+    </el-scrollbar>
+</div>
 </template>
 <script>
 import 'video.js/dist/video-js.css'
@@ -24,14 +25,18 @@ export default {
     components: {
         videoPlayer
     },
+    props: {
+        videoUrl: String,
+        height: Number
+    },
     data () {
         return {
             playerOptions: {
-                height: '600',
+                height: this.height,
                 language: 'en-US',
                 sources: [{
                     type: 'rtmp/mp4',
-                    src: 'rtmp://127.0.0.1:1935/live/test'
+                    src: this.videoUrl
                 }],
                 techOrder: ['flash', 'html5'],
                 autoplay: true,
@@ -43,6 +48,14 @@ export default {
                     remainingTimeDisplay: false,
                     fullscreenToggle: true
                 }
+            }
+        }
+    },
+
+    watch: {
+        videoUrl: function (val) {
+            if (val !== '') {
+                this.$refs.videoPlayer.player.src(val)
             }
         }
     }

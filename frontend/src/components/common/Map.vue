@@ -6,17 +6,42 @@
                 <el-breadcrumb-item :to="{ path: '/' }">Homepage</el-breadcrumb-item>
                 <el-breadcrumb-item>Map</el-breadcrumb-item>
             </el-breadcrumb>
-            <gmap-map :center="center" :zoom="10" style="width: 100%; height: 750px">
-                <gmap-marker :key="index" v-for="(m, index) in markers"
-                    :position="m.position" :clickable="true"
-                    :draggable="false" @click="center=m.position;openDialog()"
-                    :icon="m.markerOptions">
+            <gmap-map :center="center" :zoom="10" style="width: 100%; height: 650px">
+                <gmap-marker :key="index" v-for="(marker, index) in markers"
+                    :position="marker.position" :clickable="true"
+                    :draggable="false" @click="openInfoWindow(marker, index)"
+                    :icon="marker.markerOptions">
                 </gmap-marker>
+
+                <gmap-info-window
+                    v-if="infoWindowPos !== null"
+                    :options="infoOptions"
+                    :position="infoWindowPos" :opened="infoWinOpen"
+                    @closeclick="infoWinOpen = false;"
+                >
+                    <div>
+                        <el-row>
+                            <el-col :span="24">
+                                <p><strong>Vehicles Passed Last Hour: </strong> {{ infoText.vehicleNum }}</p>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24">
+                                <el-button type="primary" plain size="medium" @click="openDialog()">Show Video Stream</el-button>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24">
+                                <el-button type="primary" plain size="medium" @click="openDialog()">Show Historical Stats</el-button>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </gmap-info-window>
             </gmap-map>
 
             <el-dialog title :visible.sync="dialogVisible" width="65%" @close="closeDialog"
-                    :before-close="handleClose">
-                <live></live>
+                    v-if="dialogVisible" :before-close="handleClose">
+                <live :videoUrl="videoUrl" height="500"></live>
             </el-dialog>
         </el-main>
     </el-scrollbar>
@@ -25,49 +50,40 @@
 <script>
 import Live from './Live.vue'
 
+let redMarkerOptions = {
+    url: "./images/red.png",
+    size: {width: 60, height: 90, f: 'px', b: 'px'},
+    scaledSize: {width: 30, height: 45, f: 'px', b: 'px'},
+    anchor: {x: 15, y: 45}
+}
+
+let blueMarkerOptions = {
+    url: "./images/blue.png",
+    size: {width: 60, height: 90, f: 'px', b: 'px'},
+    scaledSize: {width: 30, height: 45, f: 'px', b: 'px'},
+    anchor: {x: 15, y: 45}
+}
+
+let greenMarkerOptions = {
+    url: "./images/green.png",
+    size: {width: 60, height: 90, f: 'px', b: 'px'},
+    scaledSize: {width: 30, height: 45, f: 'px', b: 'px'},
+    anchor: {x: 15, y: 45}
+}
+
+let greyMarkerOptions = {
+    url: "./images/grey.png",
+    size: {width: 60, height: 90, f: 'px', b: 'px'},
+    scaledSize: {width: 30, height: 45, f: 'px', b: 'px'},
+    anchor: {x: 15, y: 45}
+}
+
 export default {
     data () {
-        let size = {
-            width: 60,
-            height: 90,
-            f: 'px',
-            b: 'px'
-        }
-        let scaledSize = {
-            width: 30,
-            height: 45,
-            f: 'px',
-            b: 'px'
-        }
-
-        let red = {
-            url: './images/red.png',
-            size: size,
-            scaledSize: scaledSize
-        }
-
-        let blue = {
-            url: './images/blue.png',
-            size: size,
-            scaledSize: scaledSize
-        }
-
-        let green = {
-            url: './images/green.png',
-            size: size,
-            scaledSize: scaledSize
-        }
-
-        let grey = {
-            url: './images/grey.png',
-            size: size,
-            scaledSize: scaledSize
-        }
-
         return {
             center: {
-                lat: 40.74,
-                lng: -73.93
+                lat: 40.697475,
+                lng: -73.852881
             },
             markers: [
                 {
@@ -75,55 +91,108 @@ export default {
                         lat: 40.641449,
                         lng: -73.778107
                     },
-                    markerOptions: red
+                    markerOptions: redMarkerOptions,
+                    infoText: {
+                        vehicleNum: 6
+                    }
                 },
                 {
                     position: {
                         lat: 40.806670,
                         lng: -73.964777
                     },
-                    markerOptions: blue
+                    markerOptions: blueMarkerOptions,
+                    infoText: {
+                        vehicleNum: 6
+                    }
                 },
                 {
                     position: {
                         lat: 40.730733,
                         lng: -73.995581
                     },
-                    markerOptions: grey
+                    markerOptions: greyMarkerOptions,
+                    infoText: {
+                        vehicleNum: 11
+                    }
                 },
                 {
                     position: {
                         lat: 40.805353,
                         lng: -73.110684
                     },
-                    markerOptions: green
+                    markerOptions: greenMarkerOptions,
+                    infoText: {
+                        vehicleNum: 23
+                    }
                 },
                 {
                     position: {
                         lat: 40.705180,
                         lng: -73.622021
                     },
-                    markerOptions: blue
+                    markerOptions: blueMarkerOptions,
+                    infoText: {
+                        vehicleNum: 82
+                    }
                 },
                 {
                     position: {
                         lat: 40.737103,
                         lng: -73.671131
                     },
-                    markerOptions: red
+                    markerOptions: redMarkerOptions,
+                    infoText: {
+                        vehicleNum: 36
+                    }
                 }
             ],
-            dialogVisible: false
+            // info window
+            infoWinOpen: false,
+            infoWindowPos: null,
+            infoText: null,
+            currentMidx: null,
+            infoOptions: {
+                // optional: offset infowindow so it visually sits nicely on top of our marker
+                pixelOffset: {
+                    width: 0,
+                    height: -50
+                }
+            },
+            // dialog
+            dialogVisible: false,
+            videoUrl: ''
         }
     },
 
     methods: {
+        openInfoWindow (marker, idx) {
+            this.center = marker.position
+            this.infoWindowPos = marker.position
+            this.infoText = marker.infoText
+
+            // check if its the same marker that was selected if yes toggle
+            if (this.currentMidx === idx) {
+                this.infoWinOpen = !this.infoWinOpen
+            } else {
+                // if different marker set infowindow to open and reset current marker index
+                this.infoWinOpen = true
+                this.currentMidx = idx
+            }
+        },
+
+        closeInfoWindow () {
+            this.infoWinOpen = false
+        },
+
         openDialog () {
+            this.videoUrl = 'rtmp://127.0.0.1:1935/live/test'
             this.dialogVisible = true
         },
 
         closeDialog () {
-            // this.videoUrl = ""
+            this.videoUrl = ''
+            this.dialogVisible = false
         }
     },
 
@@ -136,6 +205,21 @@ export default {
 .player {
     margin-left: auto;
     margin-right: auto;
+}
+
+.el-row {
+    margin-bottom: 20px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+}
+
+.el-button{
+    width: 100%;
+    a{
+        text-decoration: none;
+        color: #fff;
+    }
 }
 
 .list{
