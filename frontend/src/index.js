@@ -6,20 +6,24 @@ import router from "./routes"
 import VueResource from "vue-resource"
 import Vuelidate from "vuelidate"
 import ElementUI from "element-ui"
+import locale from 'element-ui/lib/locale/lang/en'
 import "./css/index.scss"
 import "element-ui/lib/theme-chalk/index.css"
 import VueVideoPlayer from "vue-video-player"
 import "video.js/dist/video-js.css"
 import * as GmapVue from "gmap-vue"
+import HighchartsVue from "highcharts-vue"
 
 require("video.js/dist/video-js.css")
 require("vue-video-player/src/custom-theme.css")
 
 Vue.use(VueVideoPlayer)
+Vue.use(HighchartsVue)
 
 Vue.use(GmapVue, {
     load: {
-        key: "AIzaSyDFqb36wxxTmzzu_L4S40qzWdtfSXrj_cc",
+        // key: "AIzaSyCSiPl34TU7Y0P2CySY-4z5ZhMcrUZJHxU",
+        key: "",
         //   libraries: 'places' // This is required if you use the Autocomplete plugin
         // OR: libraries: 'places,drawing'
         // OR: libraries: 'places,drawing,visualization'
@@ -45,7 +49,7 @@ Vue.use(GmapVue, {
 })
 
 Vue.use(VueResource)
-Vue.use(ElementUI)
+Vue.use(ElementUI, { locale })
 Vue.use(Vuelidate)
 
 window.app = new Vue({

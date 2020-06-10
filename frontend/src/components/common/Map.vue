@@ -6,42 +6,48 @@
                 <el-breadcrumb-item :to="{ path: '/' }">Homepage</el-breadcrumb-item>
                 <el-breadcrumb-item>Map</el-breadcrumb-item>
             </el-breadcrumb>
-            <gmap-map :center="center" :zoom="10" style="width: 100%; height: 650px">
-                <gmap-marker :key="index" v-for="(marker, index) in markers"
-                    :position="marker.position" :clickable="true"
-                    :draggable="false" @click="openInfoWindow(marker, index)"
-                    :icon="marker.markerOptions">
-                </gmap-marker>
 
-                <gmap-info-window
-                    v-if="infoWindowPos !== null"
-                    :options="infoOptions"
-                    :position="infoWindowPos" :opened="infoWinOpen"
-                    @closeclick="infoWinOpen = false;"
-                >
-                    <div>
-                        <el-row>
-                            <el-col :span="24">
-                                <p><strong>Vehicles Passed Last Hour: </strong> {{ infoText.vehicleNum }}</p>
-                            </el-col>
-                        </el-row>
-                        <el-row>
-                            <el-col :span="24">
-                                <el-button type="primary" plain size="medium" @click="openDialog()">Show Video Stream</el-button>
-                            </el-col>
-                        </el-row>
-                        <el-row>
-                            <el-col :span="24">
-                                <el-button type="primary" plain size="medium" @click="openDialog()">Show Historical Stats</el-button>
-                            </el-col>
-                        </el-row>
-                    </div>
-                </gmap-info-window>
-            </gmap-map>
+            <div class="title-section">
+                <gmap-map :center="center" :zoom="10" style="width: 100%; height: 600px">
+                    <gmap-marker :key="index" v-for="(marker, index) in markers"
+                        :position="marker.position" :clickable="true"
+                        :draggable="false" @click="openInfoWindow(marker, index)"
+                        :icon="marker.markerOptions">
+                    </gmap-marker>
 
-            <el-dialog title :visible.sync="dialogVisible" width="65%" @close="closeDialog"
-                    v-if="dialogVisible" :before-close="handleClose">
+                    <gmap-info-window
+                        v-if="infoWindowPos !== null"
+                        :options="infoOptions"
+                        :position="infoWindowPos" :opened="infoWinOpen"
+                        @closeclick="infoWinOpen = false;"
+                    >
+                        <div>
+                            <el-row>
+                                <el-col :span="24">
+                                    <p><strong>Vehicles Passed Last Hour: </strong> {{ infoText.vehicleNum }}</p>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-button type="primary" plain size="medium" @click="openVideoDialog()">Show Video Stream</el-button>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-button type="primary" plain size="medium" @click="openStatsDialog()">Show Historical Stats</el-button>
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </gmap-info-window>
+                </gmap-map>
+            </div>
+
+            <el-dialog title :visible.sync="videoDialogVisible" width="65%" @close="closeVideoDialog" v-if="videoDialogVisible">
                 <live :videoUrl="videoUrl" height="500"></live>
+            </el-dialog>
+
+            <el-dialog title :visible.sync="statsDialogVisible" width="1375px" @close="closeStatsDialog" v-if="statsDialogVisible">
+                <chart-base></chart-base>
             </el-dialog>
         </el-main>
     </el-scrollbar>
@@ -49,6 +55,7 @@
 </template>
 <script>
 import Live from './Live.vue'
+import ChartBase from './ChartBase.vue'
 
 let redMarkerOptions = {
     url: "./images/red.png",
@@ -159,9 +166,11 @@ export default {
                     height: -50
                 }
             },
-            // dialog
-            dialogVisible: false,
-            videoUrl: ''
+            // video dialog
+            videoDialogVisible: false,
+            videoUrl: '',
+            // stats dialog
+            statsDialogVisible: false
         }
     },
 
@@ -185,19 +194,28 @@ export default {
             this.infoWinOpen = false
         },
 
-        openDialog () {
+        openVideoDialog () {
             this.videoUrl = 'rtmp://127.0.0.1:1935/live/test'
-            this.dialogVisible = true
+            this.videoDialogVisible = true
         },
 
-        closeDialog () {
+        closeVideoDialog () {
             this.videoUrl = ''
-            this.dialogVisible = false
+            this.videoDialogVisible = false
+        },
+
+        openStatsDialog () {
+            this.statsDialogVisible = true
+        },
+
+        closeStatsDialog () {
+            this.statsDialogVisible = false
         }
     },
 
     components: {
-        Live
+        Live,
+        ChartBase
     }
 }
 </script>
