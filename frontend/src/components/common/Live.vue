@@ -2,11 +2,7 @@
 <div class="list">
     <el-scrollbar class="page-component__scroll">
          <el-main>
-             <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item :to="{ path: '/' }">Homepage</el-breadcrumb-item>
-                <el-breadcrumb-item>Live</el-breadcrumb-item>
-            </el-breadcrumb>
-            <div>
+            <div class="title-section">
                 <videoPlayer class="vjs-custom-skin videoPlayer player"
                     ref="videoPlayer"
                     :options="playerOptions">
