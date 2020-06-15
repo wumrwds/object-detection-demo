@@ -1,8 +1,8 @@
 const appContext = ''
 
 const path = {
-    taskContext: `${appContext}/tasks`,
-    jobContext: `${appContext}/jobs`
+    cameraContext: `${appContext}/camera`,
+    statsContext: `${appContext}/stats`
 }
 
 export default path

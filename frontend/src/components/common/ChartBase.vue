@@ -4,7 +4,7 @@
         <div class="title-section">
             <div class="item-group">
                 <label>Selected Cameras：</label>
-                <el-select v-model="selectedCameras" multiple filterable placeholder="Select Cameras">
+                <el-select v-model="selectedCameras" multiple filterable :disabled="isCameraDisabled" placeholder="Select Cameras" @change="queryStats">
                     <el-option
                         v-for="camera in cameras"
                         :key="camera.value"
@@ -16,7 +16,7 @@
 
             <div class="item-group">
                 <label>Metric: </label>
-                <el-select v-model="selectedMetric" placeholder="Select Metric">
+                <el-select v-model="selectedMetric" placeholder="Select Metric" @change="queryStats">
                     <el-option
                         v-for="m in metrics"
                         :key="m.value"
@@ -28,7 +28,7 @@
 
             <div class="item-group">
                 <label>Time Unit: </label>
-                <el-select v-model="selectedTimeUnit" placeholder="Select Time Unit">
+                <el-select v-model="selectedTimeUnit" placeholder="Select Time Unit" @change="queryStats">
                     <el-option
                         v-for="tu in timeUnits"
                         :key="tu.value"
@@ -48,7 +48,8 @@
                     range-separator="To"
                     start-placeholder="Start date"
                     end-placeholder="End date"
-                    :picker-options="pickerOptions">
+                    :picker-options="pickerOptions"
+                    @change="queryStats">
                 </el-date-picker>
             </div>
         </div>
@@ -61,28 +62,37 @@
 <script>
 import Highcharts from 'highcharts'
 import exportingInit from 'highcharts/modules/exporting'
+import apiUtil from '@/api/api-utils'
+import {formatDate} from '@/js/date'
 
 exportingInit(Highcharts)
 
 export default {
+    name: "chart",
+    props: {
+        isCameraDisabled: Boolean
+    },
     data () {
         return {
             // select options
             cameras: [{
-                value: 'camera_1',
-                label: 'Camera1'
+                value: 'nyc_1',
+                label: 'NYC Camera 1'
             }, {
-                value: 'camera_2',
-                label: 'Camera2'
+                value: 'nyc_2',
+                label: 'NYC Camera 2'
             }, {
-                value: 'camera_3',
-                label: 'Camera3'
+                value: 'nyc_3',
+                label: 'NYC Camera 3'
             }, {
-                value: 'camera_4',
-                label: 'Camera4'
+                value: 'nyc_4',
+                label: 'NYC Camera 4'
             }, {
-                value: 'camera_5',
-                label: 'Camera5'
+                value: 'nyc_5',
+                label: 'NYC Camera 5'
+            }, {
+                value: 'nyc_6',
+                label: 'NYC Camera 6'
             }],
             metrics: [
                 {
@@ -108,10 +118,6 @@ export default {
                     label: 'Day'
                 },
                 {
-                    value: 'week',
-                    label: 'Week'
-                },
-                {
                     value: 'month',
                     label: 'Month'
                 }
@@ -119,7 +125,7 @@ export default {
             selectedCameras: [],
             selectedMetric: '',
             selectedTimeUnit: '',
-            selectedDate: '',
+            selectedDate: [],
             pickerOptions: {
                 shortcuts: [{
                     text: 'Last week',
@@ -160,9 +166,7 @@ export default {
                 },
 
                 xAxis: {
-                    // accessibility: {
-                    //     rangeDescription: 'Range: 2010 to 2017'
-                    // }
+                    type: 'datetime'
                 },
 
                 legend: {
@@ -175,33 +179,12 @@ export default {
                     series: {
                         label: {
                             connectorAllowed: false
-                        },
-                        pointStart: 2010
+                        }
                     }
                 },
 
-                series: [{
-                    name: 'Installation',
-                    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
-                }, {
-                    name: 'Manufacturing',
-                    data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
-                }, {
-                    name: 'Sales & Distribution',
-                    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
-                }, {
-                    name: 'Project Development',
-                    data: [null, null, 98, 213, 15112, 234, 34400, 54]
-                }, {
-                    name: 'Project Development2',
-                    data: [null, null, 123, 12169, 45, 22452, 45, 34227]
-                }, {
-                    name: 'Project Development3',
-                    data: [null, null, 678, 123, 15112, 22452, 123, 675]
-                }, {
-                    name: 'Other',
-                    data: [12908, 5948, 8105, 11248, 8989, 11816, 18274, 18111]
-                }],
+                "series": [
+                ],
 
                 responsive: {
                     rules: [{
@@ -219,6 +202,42 @@ export default {
                 }
             }
         }
+    },
+
+    methods: {
+        queryStats () {
+            if (!(this.selectedCameras && this.selectedCameras.length > 0 && this.selectedMetric &&
+                this.selectedTimeUnit && this.selectedDate && this.selectedDate.length === 2)) {
+                return
+            }
+
+            let option = {
+                camera: this.selectedCameras,
+                metric: this.selectedMetric,
+                'time-unit': this.selectedTimeUnit,
+                start: formatDate(this.selectedDate[0], "yyyy-MM-dd"),
+                end: formatDate(this.selectedDate[1], "yyyy-MM-dd")
+            }
+
+            apiUtil.getStats(this, option).then((res) => {
+                this.chartOptions.series = res.body.series
+            }, (err) => {
+                this.$message.error(err.status)
+                this.$message.error(err.body)
+            })
+        }
+    },
+
+    mounted () {
+        this.selectedCameras = ['nyc_1']
+        this.selectedMetric = 'vehicle'
+        this.selectedTimeUnit = 'day'
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+        this.selectedDate = [start, end]
+
+        this.queryStats()
     }
 }
 </script>
