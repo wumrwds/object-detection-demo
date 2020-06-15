@@ -1,5 +1,5 @@
 server:
-    port: 8080
+    port: 8081
 
 spring:
     application:
@@ -17,3 +17,18 @@ mybatis:
 
 project:
     version: V1.0
+
+swagger:
+    enabled: true
+    title: Object Detection System Backend Interface APIs
+    description: Swagger implementation for the object detection system backend services, leveraging annotations at the controller-method level.
+    useDefaultResponseMessages: false
+    enableUrlTemplating: false
+    deepLinking: true
+    defaultModelsExpandDepth: 1
+    defaultModelExpandDepth: 1
+    displayOperationId: false
+    displayRequestDuration: false
+    filter: false
+    maxDisplayedTags: 0
+    showExtensions: false
