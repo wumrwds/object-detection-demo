@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.wumrwds.ods.mapper.CameraMapper">
+    <resultMap id="BaseResultMap" type="com.github.wumrwds.ods.entity.Camera">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="camera_id" jdbcType="VARCHAR" property="cameraId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="lat" jdbcType="DOUBLE" property="lat"/>
+        <result column="lng" jdbcType="DOUBLE" property="lng"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT `camera_id`, `name`, `lat`, `lng` FROM `tt_camera`
+    </select>
+
+    <select id="selectByName" resultMap="BaseResultMap">
+        SELECT `camera_id`, `name`, `lat`, `lng` FROM `tt_camera`
+        WHERE
+            <bind name="pattern" value="'%' + name + '%'" />
+            `name` LIKE #{name, jdbcType=VARCHAR}
+    </select>
+</mapper>
