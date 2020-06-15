@@ -15,7 +15,10 @@
 	<description>Demo project for object detection</description>
 
 	<properties>
-		<java.version>1.8</java.version>
+        <java.version>1.8</java.version>
+        <spring-mybatis.version>2.1.1</spring-mybatis.version>
+        <mysql-connector.version>5.1.48</mysql-connector.version>
+        <druid.version>1.1.20</druid.version>
 	</properties>
 
 	<dependencies>
@@ -23,6 +26,18 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Spring mybatis -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>${spring-mybatis.version}</version>
+        </dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -35,6 +50,20 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
+        <!-- MySQL -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql-connector.version}</version>
+        </dependency>
+
+        <!-- Druid -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
 	</dependencies>
 
 	<build>

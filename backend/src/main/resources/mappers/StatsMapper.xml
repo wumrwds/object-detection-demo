@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.wumrwds.ods.mapper.StatsMapper">
+    <resultMap id="BaseResultMap" type="com.github.wumrwds.ods.entity.Stats">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="camera" jdbcType="VARCHAR" property="camera"/>
+        <result column="date" jdbcType="VARCHAR" property="date"/>
+        <result column="y" jdbcType="DOUBLE" property="y"/>
+    </resultMap>
+
+    <select id="selectByCamera" resultMap="BaseResultMap">
+        SELECT `camera`, `date`, `y` FROM `tt_stats_day`
+        WHERE `camera` IN
+        <foreach item="item" index="index" collection="cameraList"
+                 open="(" separator="," close=")">
+            #{item, jdbcType=VARCHAR}
+        </foreach>
+        AND metric = #{metric, jdbcType=VARCHAR}
+        AND `date` between #{start, jdbcType=VARCHAR} and #{end, jdbcType=VARCHAR}
+    </select>
+</mapper>
