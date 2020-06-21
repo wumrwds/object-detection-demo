@@ -9,11 +9,18 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class CameraServiceImpl implements CameraService {
     @Autowired
     private CameraMapper cameraMapper;
+
+    /** TODO remove these variables for generating random number */
+    private int randomMinVehicle = 10;
+    private int randomMaxVehicle = 1000;
+    private int randomMinPedestrian = 0;
+    private int randomMaxPedestrian = 120;
 
     @Override
     public List<CameraDTO> getCamera(String name) {
@@ -27,8 +34,10 @@ public class CameraServiceImpl implements CameraService {
 
         List<CameraDTO> dtoList = new LinkedList<>();
         for (Camera camera : cameras) {
-            dtoList.add(new CameraDTO(camera.getCameraId(), camera.getName(), camera.getLat(),
-                    camera.getLng(), 1231, 6492));
+            dtoList.add(new CameraDTO(camera.getCameraId(), camera.getName(), camera.getLat(), camera.getLng(),
+                    ThreadLocalRandom.current().nextInt(randomMinVehicle, randomMaxVehicle + 1),
+                    ThreadLocalRandom.current().nextInt(randomMinPedestrian, randomMaxPedestrian + 1))
+            );
         }
         return dtoList;
     }
