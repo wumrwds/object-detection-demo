@@ -1,7 +1,6 @@
 import "babel-polyfill"
 import Vue from "vue"
 import App from "./components/App.vue"
-import store from "./store"
 import router from "./routes"
 import VueResource from "vue-resource"
 import Vuelidate from "vuelidate"
@@ -22,8 +21,8 @@ Vue.use(HighchartsVue)
 
 Vue.use(GmapVue, {
     load: {
-        // key: "AIzaSyCSiPl34TU7Y0P2CySY-4z5ZhMcrUZJHxU",
-        key: "",
+        key: "AIzaSyCSiPl34TU7Y0P2CySY-4z5ZhMcrUZJHxU",
+        // key: "",
         //   libraries: 'places' // This is required if you use the Autocomplete plugin
         // OR: libraries: 'places,drawing'
         // OR: libraries: 'places,drawing,visualization'
@@ -54,6 +53,5 @@ Vue.use(Vuelidate)
 
 window.app = new Vue({
     router,
-    store,
     render: (h) => h(App)
 }).$mount("#app")

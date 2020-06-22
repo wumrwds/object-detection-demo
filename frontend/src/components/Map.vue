@@ -12,7 +12,7 @@
                     <GmapMarker :key="index" v-for="(marker, index) in markers"
                         :position="marker.position" :clickable="true"
                         :draggable="false" @click="openInfoWindow(marker, index)"
-                        :icon="marker.markerOptions" :label="test">
+                        :icon="marker.markerOptions" :label="marker.labelOptions">
                     </GmapMarker>
 
                     <gmap-info-window
@@ -29,12 +29,12 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="100">
-                                    <strong>Vehicles Passed Last Hour: </strong> {{ markers[currentMarkerIdx].vehicleNum }}
+                                    <strong>Vehicles Passed Last Minute: </strong> {{ markers[currentMarkerIdx].vehicleNum }}
                                 </el-col>
                             </el-row>
                             <el-row>
                                 <el-col :span="100">
-                                    <strong>Pedestrians Passed Last Hour: </strong> {{ markers[currentMarkerIdx].pedestrianNum }}
+                                    <strong>Pedestrians Passed Last Minute: </strong> {{ markers[currentMarkerIdx].pedestrianNum }}
                                 </el-col>
                             </el-row>
                             <el-row>
@@ -64,8 +64,8 @@
 </div>
 </template>
 <script>
-import Live from './Live.vue'
-import ChartBase from './ChartBase.vue'
+import Live from './common/Live.vue'
+import ChartBase from './common/ChartBase.vue'
 import apiUtil from '@/api/api-utils'
 import SockJS from 'sockjs-client'
 import Stomp from 'webstomp-client'
@@ -73,11 +73,6 @@ import Stomp from 'webstomp-client'
 export default {
     data () {
         return {
-            test: {
-                color: 'gray',
-                fontWeight: 'bold',
-                text: 'Hello world'
-            },
             center: {
                 lat: 40.697475,
                 lng: -73.852881
@@ -144,7 +139,12 @@ export default {
                     labelOrigin: {x: 15, y: -10}
                 },
                 vehicleNum: vehicleNum,
-                pedestrianNum: pedestrianNum
+                pedestrianNum: pedestrianNum,
+                labelOptions: {
+                    color: 'gray',
+                    fontWeight: 'bold',
+                    text: name
+                }
             }
         },
 

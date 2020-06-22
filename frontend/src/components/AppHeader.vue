@@ -6,21 +6,12 @@
 			</el-col>
 			<el-col :span="12"></el-col>
 		</el-row>
-		<el-dialog ref="console_modal"
-			:visible="isShowLoginDialog"
-			@close = "closeDialog"
-			width="400px">
-			<base-login :handleData="handleData"></base-login>
-		</el-dialog>
-
 	</div>
 </template>
 <script>
-import BaseLogin from './common/BaseLogin.vue'
 export default {
     // name: "app-header",
     components: {
-        BaseLogin
     },
     data () {
         return {

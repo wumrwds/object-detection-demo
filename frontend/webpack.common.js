@@ -68,7 +68,6 @@ module.exports = {
         ]
     },
     resolve: {  
-        //自动扩展文件后缀名，意味着我们require模块可以省略不写后缀名  
         extensions: ['.js', '.jsx'],  
         alias: {  
             '@': path.resolve(__dirname, 'src'),
@@ -84,7 +83,7 @@ module.exports = {
             hash: true
         }),
         new copyWebpackPlugin([
-			{ from: 'src/asserts'}
+			{ from: 'src/assets'}
         ])
     ]
 }

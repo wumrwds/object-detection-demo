@@ -3,8 +3,8 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-const Map = () => import(/* webpackChunkName: "index" */ '../components/common/Map.vue')
-const Stats = () => import(/* webpackChunkName: "index" */ '../components/common/Stats.vue')
+const Map = () => import(/* webpackChunkName: "index" */ '../components/Map.vue')
+const Stats = () => import(/* webpackChunkName: "index" */ '../components/Stats.vue')
 
 const routes = [
     {

@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import leftTreeDatas from "../asserts/data/leftTree.json"
+import leftTreeDatas from "../assets/data/leftTree.json"
 export default {
     data () {
         return {

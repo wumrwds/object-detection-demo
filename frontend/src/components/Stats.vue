@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import ChartBase from './ChartBase.vue'
+import ChartBase from './common/ChartBase.vue'
 
 export default {
     data () {
