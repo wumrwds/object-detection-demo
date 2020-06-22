@@ -8,12 +8,12 @@
             </el-breadcrumb>
 
             <div class="title-section">
-                <gmap-map :center="center" :zoom="10" style="width: 100%; height: 600px">
-                    <gmap-marker :key="index" v-for="(marker, index) in markers"
+                <GmapMap :center="center" :zoom="10" style="width: 100%; height: 600px">
+                    <GmapMarker :key="index" v-for="(marker, index) in markers"
                         :position="marker.position" :clickable="true"
                         :draggable="false" @click="openInfoWindow(marker, index)"
-                        :icon="marker.markerOptions">
-                    </gmap-marker>
+                        :icon="marker.markerOptions" :label="test">
+                    </GmapMarker>
 
                     <gmap-info-window
                         v-if="infoWindowPos !== null"
@@ -29,12 +29,12 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="100">
-                                    <strong>Vehicles Passed Last Hour: </strong> {{ infoText.vehicleNum }}
+                                    <strong>Vehicles Passed Last Hour: </strong> {{ vehicleNum }}
                                 </el-col>
                             </el-row>
                             <el-row>
                                 <el-col :span="100">
-                                    <strong>Pedestrians Passed Last Hour: </strong> {{ infoText.PedestrianNum }}
+                                    <strong>Pedestrians Passed Last Hour: </strong> {{ PedestrianNum }}
                                 </el-col>
                             </el-row>
                             <el-row>
@@ -49,7 +49,7 @@
                             </el-row>
                         </div>
                     </gmap-info-window>
-                </gmap-map>
+                </GmapMap>
             </div>
 
             <el-dialog title="Video Stream" :visible.sync="videoDialogVisible" width="65%" @close="closeVideoDialog" v-if="videoDialogVisible">
@@ -66,128 +66,28 @@
 <script>
 import Live from './Live.vue'
 import ChartBase from './ChartBase.vue'
-
-let redMarkerOptions = {
-    url: "./images/red.png",
-    size: {width: 60, height: 90, f: 'px', b: 'px'},
-    scaledSize: {width: 30, height: 45, f: 'px', b: 'px'},
-    anchor: {x: 15, y: 45}
-}
-
-let blueMarkerOptions = {
-    url: "./images/blue.png",
-    size: {width: 60, height: 90, f: 'px', b: 'px'},
-    scaledSize: {width: 30, height: 45, f: 'px', b: 'px'},
-    anchor: {x: 15, y: 45}
-}
-
-let greenMarkerOptions = {
-    url: "./images/green.png",
-    size: {width: 60, height: 90, f: 'px', b: 'px'},
-    scaledSize: {width: 30, height: 45, f: 'px', b: 'px'},
-    anchor: {x: 15, y: 45}
-}
-
-let greyMarkerOptions = {
-    url: "./images/grey.png",
-    size: {width: 60, height: 90, f: 'px', b: 'px'},
-    scaledSize: {width: 30, height: 45, f: 'px', b: 'px'},
-    anchor: {x: 15, y: 45}
-}
+import apiUtil from '@/api/api-utils'
 
 export default {
     data () {
         return {
+            test: {
+                color: 'gray',
+                fontWeight: 'bold',
+                text: 'Hello world'
+            },
             center: {
                 lat: 40.697475,
                 lng: -73.852881
             },
-            markers: [
-                {
-                    id: 'nyc_1',
-                    name: 'NYC Camera 1',
-                    position: {
-                        lat: 40.641449,
-                        lng: -73.778107
-                    },
-                    markerOptions: redMarkerOptions,
-                    infoText: {
-                        vehicleNum: 61232,
-                        PedestrianNum: 2132
-                    }
-                },
-                {
-                    id: 'nyc_2',
-                    name: 'NYC Camera 2',
-                    position: {
-                        lat: 40.806670,
-                        lng: -73.964777
-                    },
-                    markerOptions: blueMarkerOptions,
-                    infoText: {
-                        vehicleNum: 12123,
-                        PedestrianNum: 3513
-                    }
-                },
-                {
-                    id: 'nyc_3',
-                    name: 'NYC Camera 3',
-                    position: {
-                        lat: 40.730733,
-                        lng: -73.995581
-                    },
-                    markerOptions: greyMarkerOptions,
-                    infoText: {
-                        vehicleNum: 22283,
-                        PedestrianNum: 7872
-                    }
-                },
-                {
-                    id: 'nyc_4',
-                    name: 'NYC Camera 4',
-                    position: {
-                        lat: 40.805353,
-                        lng: -73.110684
-                    },
-                    markerOptions: greenMarkerOptions,
-                    infoText: {
-                        vehicleNum: 9542,
-                        PedestrianNum: 7329
-                    }
-                },
-                {
-                    id: 'nyc_5',
-                    name: 'NYC Camera 5',
-                    position: {
-                        lat: 40.705180,
-                        lng: -73.622021
-                    },
-                    markerOptions: blueMarkerOptions,
-                    infoText: {
-                        vehicleNum: 9628,
-                        PedestrianNum: 898
-                    }
-                },
-                {
-                    id: 'nyc_6',
-                    name: 'NYC Camera 6',
-                    position: {
-                        lat: 40.737103,
-                        lng: -73.671131
-                    },
-                    markerOptions: redMarkerOptions,
-                    infoText: {
-                        vehicleNum: 4598,
-                        PedestrianNum: 1204
-                    }
-                }
-            ],
+            markers: [],
             selectedMarkerId: '',
             selectedMarkerName: '',
             // info window
             infoWinOpen: false,
             infoWindowPos: null,
-            infoText: null,
+            vehicleNum: null,
+            PedestrianNum: null,
             currentMidx: null,
             infoOptions: {
                 // optional: offset infowindow so it visually sits nicely on top of our marker
@@ -205,10 +105,54 @@ export default {
     },
 
     methods: {
+        queryCameras () {
+            apiUtil.getCamera(this).then((res) => {
+                var _self = this
+                this.markers = res.body.map(function (obj) {
+                    return _self.$options.methods.genMarkerOpt(obj.id, obj.name, obj.lat, obj.lng, obj.vehicleNum, obj.PedestrianNum)
+                })
+            }, (err) => {
+                this.$message.error(err.status)
+                this.$message.error(err.body)
+            })
+        },
+
+        genMarkerOpt (id, name, lat, lng, vehicleNum, PedestrianNum) {
+            let markerUrl
+            if (!vehicleNum) {
+                markerUrl = "./images/gray.png"
+            } else if (vehicleNum < 300) {
+                markerUrl = "./images/green.png"
+            } else if (vehicleNum < 650) {
+                markerUrl = "./images/blue.png"
+            } else {
+                markerUrl = "./images/red.png"
+            }
+
+            return {
+                id: id,
+                name: name,
+                position: {
+                    lat: lat,
+                    lng: lng
+                },
+                markerOptions: {
+                    url: markerUrl,
+                    size: {width: 60, height: 90, f: 'px', b: 'px'},
+                    scaledSize: {width: 30, height: 45, f: 'px', b: 'px'},
+                    anchor: {x: 15, y: 45},
+                    labelOrigin: {x: 15, y: -10}
+                },
+                vehicleNum: vehicleNum,
+                PedestrianNum: PedestrianNum
+            }
+        },
+
         openInfoWindow (marker, idx) {
             this.center = marker.position
             this.infoWindowPos = marker.position
-            this.infoText = marker.infoText
+            this.vehicleNum = marker.vehicleNum
+            this.PedestrianNum = marker.PedestrianNum
             this.selectedMarkerId = marker.id
             this.selectedMarkerName = marker.name
 
@@ -247,6 +191,10 @@ export default {
         closeStatsDialog () {
             this.statsDialogVisible = false
         }
+    },
+
+    mounted () {
+        this.queryCameras()
     },
 
     components: {

@@ -4,8 +4,8 @@ const getStats = (vm, option) => {
     return vm.$http.get(apiPath.statsContext, {params: option})
 }
 
-const getJobs = (vm, option) => {
-    return vm.$http.get(apiPath.jobContext, {params: option})
+const getCamera = (vm, option) => {
+    return vm.$http.get(apiPath.cameraContext, {params: option})
 }
 
 const getJobProcess = (vm, jobId) => {
@@ -18,7 +18,7 @@ const getErrorLogs = (vm, jobId, option) => {
 
 const utils = {
     getStats,
-    getJobs,
+    getCamera,
     getJobProcess,
     getErrorLogs
 }
