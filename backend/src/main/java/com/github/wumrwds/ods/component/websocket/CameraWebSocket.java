@@ -8,8 +8,8 @@ import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@Component
-@ServerEndpoint("/websocket/camera")
+//@Component
+//@ServerEndpoint("/websocket/camera")
 public class CameraWebSocket {
 
     private static final Logger logger = LoggerFactory.getLogger(CameraWebSocket.class);
