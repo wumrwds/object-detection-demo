@@ -14,9 +14,12 @@
     </select>
 
     <select id="selectByName" resultMap="BaseResultMap">
+        <bind name="pattern" value="'%' + name + '%'" />
         SELECT `camera_id`, `name`, `lat`, `lng` FROM `tt_camera`
-        WHERE
-            <bind name="pattern" value="'%' + name + '%'" />
-            `name` LIKE #{name, jdbcType=VARCHAR}
+        <where>
+            <if test="name != null">
+                `name` LIKE #{pattern}
+            </if>
+        </where>
     </select>
 </mapper>
