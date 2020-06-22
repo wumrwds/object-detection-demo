@@ -24,17 +24,17 @@
                         <div>
                             <el-row>
                                 <el-col :span="100">
-                                    <strong>Camera Label: </strong> {{ selectedMarkerName }}
+                                    <strong>Camera Label: </strong> {{ markers[currentMarkerIdx].name }}
                                 </el-col>
                             </el-row>
                             <el-row>
                                 <el-col :span="100">
-                                    <strong>Vehicles Passed Last Hour: </strong> {{ vehicleNum }}
+                                    <strong>Vehicles Passed Last Hour: </strong> {{ markers[currentMarkerIdx].vehicleNum }}
                                 </el-col>
                             </el-row>
                             <el-row>
                                 <el-col :span="100">
-                                    <strong>Pedestrians Passed Last Hour: </strong> {{ PedestrianNum }}
+                                    <strong>Pedestrians Passed Last Hour: </strong> {{ markers[currentMarkerIdx].pedestrianNum }}
                                 </el-col>
                             </el-row>
                             <el-row>
@@ -67,6 +67,8 @@
 import Live from './Live.vue'
 import ChartBase from './ChartBase.vue'
 import apiUtil from '@/api/api-utils'
+import SockJS from 'sockjs-client'
+import Stomp from 'webstomp-client'
 
 export default {
     data () {
@@ -81,14 +83,10 @@ export default {
                 lng: -73.852881
             },
             markers: [],
-            selectedMarkerId: '',
-            selectedMarkerName: '',
             // info window
             infoWinOpen: false,
             infoWindowPos: null,
-            vehicleNum: null,
-            PedestrianNum: null,
-            currentMidx: null,
+            currentMarkerIdx: null,
             infoOptions: {
                 // optional: offset infowindow so it visually sits nicely on top of our marker
                 pixelOffset: {
@@ -100,7 +98,9 @@ export default {
             videoDialogVisible: false,
             videoUrl: '',
             // stats dialog
-            statsDialogVisible: false
+            statsDialogVisible: false,
+            // websocket
+            stompClient: null
         }
     },
 
@@ -109,7 +109,7 @@ export default {
             apiUtil.getCamera(this).then((res) => {
                 var _self = this
                 this.markers = res.body.map(function (obj) {
-                    return _self.$options.methods.genMarkerOpt(obj.id, obj.name, obj.lat, obj.lng, obj.vehicleNum, obj.PedestrianNum)
+                    return _self.$options.methods.genMarkerOpt(obj.id, obj.name, obj.lat, obj.lng, obj.vehicleNum, obj.pedestrianNum)
                 })
             }, (err) => {
                 this.$message.error(err.status)
@@ -117,7 +117,7 @@ export default {
             })
         },
 
-        genMarkerOpt (id, name, lat, lng, vehicleNum, PedestrianNum) {
+        genMarkerOpt (id, name, lat, lng, vehicleNum, pedestrianNum) {
             let markerUrl
             if (!vehicleNum) {
                 markerUrl = "./images/gray.png"
@@ -144,25 +144,21 @@ export default {
                     labelOrigin: {x: 15, y: -10}
                 },
                 vehicleNum: vehicleNum,
-                PedestrianNum: PedestrianNum
+                pedestrianNum: pedestrianNum
             }
         },
 
         openInfoWindow (marker, idx) {
             this.center = marker.position
             this.infoWindowPos = marker.position
-            this.vehicleNum = marker.vehicleNum
-            this.PedestrianNum = marker.PedestrianNum
-            this.selectedMarkerId = marker.id
-            this.selectedMarkerName = marker.name
 
             // check if its the same marker that was selected if yes toggle
-            if (this.currentMidx === idx) {
+            if (this.currentMarkerIdx === idx) {
                 this.infoWinOpen = !this.infoWinOpen
             } else {
                 // if different marker set infowindow to open and reset current marker index
                 this.infoWinOpen = true
-                this.currentMidx = idx
+                this.currentMarkerIdx = idx
             }
         },
 
@@ -183,18 +179,46 @@ export default {
         openStatsDialog () {
             this.statsDialogVisible = true
             this.$nextTick(() => {
-                this.$refs.chartBase.selectedCameras = [this.selectedMarkerId]
+                this.$refs.chartBase.selectedCameras = [this.markers[currentMarkerIdx].id]
                 this.$refs.chartBase.queryStats()
             })
         },
 
         closeStatsDialog () {
             this.statsDialogVisible = false
+        },
+
+        initWebSocket () {
+            this.connect()
+        },
+        connect () {
+            const socket = new SockJS('/camera')
+            this.stompClient = Stomp.over(socket)
+            this.stompClient.connect({}, (frame) => {
+                var _self = this
+                this.stompClient.subscribe('/topic/camera', (res) => {
+                    this.markers = JSON.parse(res.body).map(function (obj) {
+                        return _self.$options.methods.genMarkerOpt(obj.id, obj.name, obj.lat, obj.lng, obj.vehicleNum, obj.pedestrianNum)
+                    })
+                })
+            })
+        },
+        disconnect () {
+            if (this.stompClient != null) {
+                this.stompClient.disconnect()
+                console.log("Disconnected")
+            }
         }
     },
 
     mounted () {
         this.queryCameras()
+
+        if ('WebSocket' in window) {
+            this.initWebSocket()
+        } else {
+            alert('Current browser doesn\'t support Websocket!')
+        }
     },
 
     components: {
